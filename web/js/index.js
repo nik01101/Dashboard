@@ -33,6 +33,7 @@ var date = $('#fecha').dtDateTime();
       .columns( 1 )
       .search( date.val())
       .draw();
+
 } );
 
 const comboBox = document.getElementById('miComboBox');
@@ -51,7 +52,6 @@ fetch('php/marcas.php')
   .catch(error => {
     console.error('Error al cargar los datos: ', error);
   });
-
 
 
   
