@@ -161,60 +161,25 @@
 	<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/buttons/2.2.2/js/buttons.html5.min.js"></script>
 	<script src="js/app.js"></script>
 	<script>
-        $(document).ready(function() {
-            $campo = $_GET['campo1'];
-    let table = $('#myTable').DataTable( {
-    ajax: {
-        "url": "php/tabla_detalle_venta_marca.php?=".$campo,
-        "dataType": "json",
-        "contentType": "application/json; charset=utf-8",
-        "type": "GET",
-        "dataSrc": "",
-        "processing": true, 
-        "bProcessing": true
-    },
-    columns: [
-        { data: 'periodo' },
-        { data: 'fecha_em' }
-    ],dom: "Bfrtip",
-    buttons: [
-        { extend: 'excel',text: 'Exportar Excel<i class="fas fa-file-excel fa-lg"></i>',
-        className:'btn btn-success excel-exp'},
-        { extend: 'copy',text: 'Copiar Datos<i class="fas fa-file-excel fa-lg"></i>',
-        className:'btn btn-success excel-exp'},
-        { extend: 'csv',text: 'Exportar CSV<i class="fas fa-file-excel fa-lg"></i>',
-        className:'btn btn-success excel-exp'}
-    ],
-    language: {
-    url: '//cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json',
+        function realizarConsulta(parametro) {
+    // Realiza una solicitud AJAX al servidor para obtener los nuevos datos con el parámetro.
+        $.ajax({
+        url: 'hp/tabla_detalle_venta_marca.php'.$_GET['campo1'], // Ruta de tu script en el servidor que realiza la consulta.
+        type: 'POST',
+        data: { parametro: parametro }, // Envía el parámetro al servidor.
+        dataType: 'json', // Espera datos JSON como respuesta.
+        success: function(data) {
+            // 3. Borra los datos existentes y agrega los nuevos datos.
+            miTabla.clear().rows.add(data).draw();
+        },
+        error: function() {
+            console.error('Error al obtener los datos.');
         }
-  } );
-});
-
-var date = $('#fecha').dtDateTime();
-      $('#fecha').on( 'change', function () {
-      table
-      .columns( 1 )
-      .search( date.val())
-      .draw();
-} );
-
-const comboBox = document.getElementById('miComboBox');
-
-fetch('php/marcas.php')
-  .then(response => response.json())
-  .then(data => {
-    // Itera sobre los datos y agrega opciones al ComboBox
-    data.forEach(item => {
-      const option = document.createElement('option');
-      option.value = item.marc_codi; // El valor que quieres asociar con la opción
-      option.text = item.marc_descl;   // El texto que se mostrará en el ComboBox
-      comboBox.appendChild(option);
     });
-  })
-  .catch(error => {
-    console.error('Error al cargar los datos: ', error);
-  });
+}
+$(document).ready(function() {
+    realizarConsulta($_GET['campo1']);
+});
     </script>
 
 	

@@ -3,7 +3,7 @@ var valor = select.value;
 
 let table = $('#myTable').DataTable( {
     ajax: {
-        "url": "php/tabla_detalle_venta_marca.php?="+valor,
+        "url": "php/tabla_detalle_venta_marca.php",
         "dataType": "json",
         "contentType": "application/json; charset=utf-8",
         "type": "GET",

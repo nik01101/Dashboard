@@ -7,6 +7,6 @@ if(isset($_GET['campo1'])== null){
     $sqlserver->getDatosDetalleVentaMarca(null);
 
 }else{
-    $sqlserver->getDatosDetalleVentaMarca(isset($_GET['campo1']));
+    $sqlserver->getDatosDetalleVentaMarca($_GET['campo1']);
 }
 ?>
