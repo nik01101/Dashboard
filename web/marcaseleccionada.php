@@ -161,16 +161,19 @@
 	<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/buttons/2.2.2/js/buttons.html5.min.js"></script>
 	<script src="js/app.js"></script>
 	<script>
+
+    var urlParams = new URLSearchParams(window.location.search);
+    var campo1 = urlParams.get('campo1');
         function realizarConsulta(parametro) {
     // Realiza una solicitud AJAX al servidor para obtener los nuevos datos con el parámetro.
         $.ajax({
-        url: 'hp/tabla_detalle_venta_marca.php'.$_GET['campo1'], // Ruta de tu script en el servidor que realiza la consulta.
+        url: 'php/tabla_detalle_venta_marca.php'.campo1, // Ruta de tu script en el servidor que realiza la consulta.
         type: 'POST',
-        data: { parametro: parametro }, // Envía el parámetro al servidor.
+        data: { campo1: campo1 }, // Envía el parámetro al servidor.
         dataType: 'json', // Espera datos JSON como respuesta.
         success: function(data) {
             // 3. Borra los datos existentes y agrega los nuevos datos.
-            miTabla.clear().rows.add(data).draw();
+            myTable.clear().rows.add(data).draw();
         },
         error: function() {
             console.error('Error al obtener los datos.');
@@ -178,7 +181,7 @@
     });
 }
 $(document).ready(function() {
-    realizarConsulta($_GET['campo1']);
+    realizarConsulta(campo1);
 });
     </script>
 
