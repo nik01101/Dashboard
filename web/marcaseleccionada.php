@@ -162,8 +162,7 @@
 	<script src="js/app.js"></script>
 	<script>
 
-    var urlParams = new URLSearchParams(window.location.search);
-    var campo1 = urlParams.get('campo1');
+    
         function realizarConsulta(parametro) {
     // Realiza una solicitud AJAX al servidor para obtener los nuevos datos con el parámetro.
         $.ajax({
