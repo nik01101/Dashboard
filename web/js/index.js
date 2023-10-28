@@ -1,13 +1,13 @@
-var select = document.getElementById("miComboBox");
-var valor = select.value;
-
 var urlParams = new URLSearchParams(window.location.search);
-    var campo1 = urlParams.get('campo1');
+var campo1 = urlParams.get('campo1');
 
 let table = $('#myTable').DataTable( {
     ajax: {
-        "url": "php/tabla_detalle_venta_marca.php?campo1="+campo1,
+        "url": "php/tabla_detalle_venta_marca.php",
         "dataType": "json",
+        data: {
+            'campo1': campo1
+        },
         "contentType": "application/json; charset=utf-8",
         "type": "GET",
         "dataSrc": ""

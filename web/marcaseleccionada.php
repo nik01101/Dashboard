@@ -163,25 +163,6 @@
 	<script>
 
     
-        function realizarConsulta(parametro) {
-    // Realiza una solicitud AJAX al servidor para obtener los nuevos datos con el parámetro.
-        $.ajax({
-        url: 'php/tabla_detalle_venta_marca.php'.campo1, // Ruta de tu script en el servidor que realiza la consulta.
-        type: 'POST',
-        data: { campo1: campo1 }, // Envía el parámetro al servidor.
-        dataType: 'json', // Espera datos JSON como respuesta.
-        success: function(data) {
-            // 3. Borra los datos existentes y agrega los nuevos datos.
-            myTable.clear().rows.add(data).draw();
-        },
-        error: function() {
-            console.error('Error al obtener los datos.');
-        }
-    });
-}
-$(document).ready(function() {
-    realizarConsulta(campo1);
-});
     </script>
 
 	
