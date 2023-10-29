@@ -17,7 +17,7 @@
 	<link href="https://cdn.datatables.net/v/bs5/jszip-3.10.1/dt-1.13.6/b-2.4.2/b-html5-2.4.2/date-1.5.1/r-2.5.0/sl-1.7.0/datatables.min.css" rel="stylesheet">
 	<link href="https://cdn.jsdelivr.net/npm/busy-load@0.1.2/dist/app.min.css" rel="stylesheet">
 	<link href="css/datatables.css" rel="stylesheet">
-	<link href="css/style.css" rel="stylesheet"
+	<link href="css/style.css" rel="stylesheet">
 </head>
 
 <body>
@@ -85,7 +85,7 @@
 						<div class="card flex-fill">
 							<div class="card-header">
 							<h5>Marca:</h5>
-								<form method="get" action="php/tabla_detalle_venta_marca.php">
+								<form method="get" action="marcaseleccionada.php">
 										<select id="miComboBox" name="campo1" class="border-2">
   											<option value="">Selecciona una marca</option>
 										</select>
@@ -128,8 +128,11 @@
 													<table id="myTable"   class="display m-3">
     													<thead>
         													<tr>
-            													<th>Periodo</th>
-            													<th>Fecha</th>
+                                                                <th>Codigo</th>
+            													<th>Vendedor</th>
+																<th>Valor</th>
+																<th>Costo</th>
+																<th>Margen</th>
         													</tr>
     													</thead>
     													<tbody>
@@ -160,10 +163,7 @@
 	<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/buttons/2.2.2/js/dataTables.buttons.min.js"></script>
 	<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/buttons/2.2.2/js/buttons.html5.min.js"></script>
 	<script src="js/app.js"></script>
-	<script>
-
-    
-    </script>
+	<script src="js/index.js"></script>
 
 	
 </body>

@@ -60,33 +60,17 @@ class SqlServer {
         print json_encode($data);
     }
 
-    public function getDatosDetalleVentaMarca1($marca){
-        $this->conBDPDO();
-        if($marca == null){
-        $query = sprintf("SELECT periodo, fecha_em from consolidado_diario_ven");
-        $result = $this->conn->query($query);
-        $data = array();
-        $data = array_merge($data, $result->fetchAll(PDO::FETCH_ASSOC));
-        
-        print json_encode($data);
-        }else{
-        $query = sprintf("SELECT periodo, fecha_em from consolidado_diario_ven");
-        $result = $this->conn->query($query);
-        $data = array();
-        $data = array_merge($data, $result->fetchAll(PDO::FETCH_ASSOC));
-        
-        print json_encode($data);
-        }
-    }
 
     public function getDatosDetalleVentaMarca($marca) {
         $this->conBDPDO();
-        $query = "SELECT periodo, fecha_em FROM consolidado_diario_ven";
+        $query = "SELECT c.pers_vend, cast(p.pers_rsoc as nvarchar(max)) as vendedor, sum(c.sum_valor) as valor, sum(c.sum_costo) as costo, sum(c.margen_soles) as margen
+        FROM consolidado_diario_ven c INNER JOIN persona p ON p.pers_codi=c.pers_vend";
     
         if ($marca != null) {
-            $query .= " WHERE marc_codi = :marca"; // Assuming 'marca' is the column name
+            $query .= " WHERE c.periodo='202309' and marc_codi= :marca"; // Assuming 'marca' is the column name
         }
-    
+        $query .= " GROUP BY c.pers_vend, cast(p.pers_rsoc as nvarchar(max)) ORDER BY c.pers_vend";
+
         $stmt = $this->conn->prepare($query);
     
         if ($marca != null) {
@@ -95,7 +79,7 @@ class SqlServer {
     
         $stmt->execute();
         $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        echo json_encode($data);
+        print json_encode($data);
     }
     public function getMarcas(){
         $this->conBDPDO();
@@ -107,6 +91,8 @@ class SqlServer {
             
             print json_encode($data);
     }
+
+
 }
 
 

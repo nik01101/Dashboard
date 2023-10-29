@@ -1,6 +1,6 @@
 var urlParams = new URLSearchParams(window.location.search);
 var campo1 = urlParams.get('campo1');
-
+console.log(campo1);
 let table = $('#myTable').DataTable( {
     ajax: {
         "url": "php/tabla_detalle_venta_marca.php",
@@ -13,8 +13,11 @@ let table = $('#myTable').DataTable( {
         "dataSrc": ""
     },
     columns: [
-        { data: 'periodo' },
-        { data: 'fecha_em' }
+        { data: 'pers_vend' },
+        { data: 'vendedor' },
+        { data: 'valor' },
+        { data: 'costo' },
+        { data: 'margen' }
     ],dom: "Bfrtip",
     buttons: [
         { extend: 'excel',text: 'Exportar Excel<i class="fas fa-file-excel fa-lg"></i>',
