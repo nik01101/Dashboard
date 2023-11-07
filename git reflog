@@ -1,0 +1,30 @@
+[33mcommit 0f4fd48f53ddaca2e9b0e328966f4623cc66ee6f[m[33m ([m[1;36mHEAD -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m)[m
+Author: Nikcolas Canessa <nikcolascanessaarguedas@gmail.com>
+Date:   Tue Nov 7 18:25:25 2023 -0500
+
+    aaccscvs
+
+[33mcommit 670a0f7eb9251fd66aeba60608181d19ca6ad763[m
+Merge: 4a7d6ca 2989d64
+Author: Nikcolas Canessa <nikcolascanessaarguedas@gmail.com>
+Date:   Sat Oct 28 17:29:58 2023 -0500
+
+    Merge branch 'main' of https://github.com/nik01101/Dashboard1
+
+[33mcommit 4a7d6cadd3caf4f10d49f1361a9cfb3b5ef7d8cc[m
+Author: Nikcolas Canessa <nikcolascanessaarguedas@gmail.com>
+Date:   Sat Oct 28 17:28:53 2023 -0500
+
+    cambio 2
+
+[33mcommit 2989d6474f4c36bdee97dc7d0c0e3f4da88016ca[m
+Author: nik01101 <137359962+nik01101@users.noreply.github.com>
+Date:   Sat Oct 28 17:23:33 2023 -0500
+
+    Create laravel.yml
+
+[33mcommit 3380eeb2e80e9b2fa3e21e28de45a78e10c6a296[m
+Author: Nikcolas Canessa <nikcolascanessaarguedas@gmail.com>
+Date:   Sat Oct 28 17:18:14 2023 -0500
+
+    v.1.0 no cambios
