@@ -64,9 +64,14 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
             </a>
 					</li>
 
-					<li class="sidebar-item active">
+					<li class="sidebar-item">
 						<a class="sidebar-link" href="Detalle_stock_marca.php">
               <i class="align-middle" data-feather="bar-chart-2"></i> <span class="align-middle">Stock Por Marca</span>
+            </a>
+					</li>
+					<li class="sidebar-item active">
+						<a class="sidebar-link" href="Stock_por_marca.php">
+              <i class="align-middle" data-feather="bar-chart-2"></i> <span class="align-middle">Detalle Stock Por Marca</span>
             </a>
 					</li>
 			</div>
