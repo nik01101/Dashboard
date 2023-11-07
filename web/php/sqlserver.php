@@ -44,42 +44,116 @@ class SqlServer {
         print json_encode($data);
     }
 
-    public function getDatosBarras(){
+    public function getDatosBarras($request,$parametro,$parametro2){
         $this->conBDPDO();
-        
-        $query = sprintf("SELECT periodo, sum_valor FROM consolidado_periodo");
- 
-        $result = $this->conn->query($query);
+        switch ($request) {
+            case 1:{
+                $query = "SELECT top 8 m.marc_descc, c.sum_valor
+                FROM consolidado_mes_marca c INNER JOIN marca m ON m.marc_codi=c.marc_codi";
+    
+                if ($parametro != null) {
+                $query .= " WHERE c.periodo= :periodo"; 
+                }
+                $query .= " ORDER BY c.sum_valor DESC";
 
-        $data = array();
-        foreach ($result as $row) {
-        	$data[] = $row;
-        }
- 
-        $result->closeCursor();
-        print json_encode($data);
+                $stmt = $this->conn->prepare($query);
+    
+                if ($parametro != null) {
+                $stmt->bindParam(':periodo', $parametro, PDO::PARAM_STR);
+                }
+                $stmt->execute();
+                $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+                print json_encode($data);
+            }break;
+            case 2:{
+                $query = sprintf("SELECT TOP 6 periodo, sum_valor
+                FROM consolidado_periodo
+                WHERE flag_cierre = 1 AND periodo<='202310'
+                ORDER BY periodo DESC");
+                $result = $this->conn->query($query);
+                $data = array();
+                foreach ($result as $row) {
+        	    $data[] = $row;
+                }
+                $result->closeCursor();
+                print json_encode($data);
+            }break;
+            case 3:{
+                $query = sprintf("SELECT TOP 7 fecha_em, sum(sum_valor) as valor
+                FROM consolidado_diario_ven
+                WHERE periodo='202310'
+                GROUP BY fecha_em
+                ORDER BY fecha_em DESC");
+                $result = $this->conn->query($query);
+                $data = array();
+                foreach ($result as $row) {
+        	    $data[] = $row;
+                }
+                $result->closeCursor();
+                print json_encode($data);
+            }break;
+            case 4:{
+                $query = "SELECT  f.fami_descc, sum(c.sum_valor) as Valor
+                FROM consolidado_mes_familia c JOIN familia f ON f.fami_codi=c.fami_codi";
+    
+                if ($parametro != null ) {
+                $query .= " WHERE c.periodo= :periodo and f.marc_codi= :marca"; 
+                }
+                $query .= " GROUP BY f.fami_descc";
+
+                $stmt = $this->conn->prepare($query);
+    
+                if ($parametro != null) {
+                $stmt->bindParam(':periodo', $parametro, PDO::PARAM_STR);
+                $stmt->bindParam(':marca', $parametro2, PDO::PARAM_STR);
+                }
+                $stmt->execute();
+                $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+                print json_encode($data);
+            }break;
+            case 5:{
+                $query = sprintf("SELECT periodo,sum_valor
+                FROM consolidado_periodo");
+                $result = $this->conn->query($query);
+                $data = array();
+                foreach ($result as $row) {
+        	    $data[] = $row;
+                }
+                $result->closeCursor();
+                print json_encode($data);
+            }break;
+            case 6:{
+                $query = sprintf("SELECT TOP 10 fecha_em,sum(sum_valor) as Ventas
+                FROM consolidado_diario_ven
+                GROUP BY periodo, fecha_em
+                ORDER BY fecha_em DESC");
+                $result = $this->conn->query($query);
+                $data = array();
+                foreach ($result as $row) {
+        	    $data[] = $row;
+                }
+                $result->closeCursor();
+                print json_encode($data);
+            }break;
+            default:{
+                echo"solicitud invalida ". $request ."";
+            }
+    }
     }
 
-
-    public function getDatosDetalleVentaMarca($marca) {
+    public function getDatosDetalleVentaMarca($marca,$periodo) {
         $this->conBDPDO();
-        $query = "SELECT c.pers_vend, cast(p.pers_rsoc as nvarchar(max)) as vendedor, sum(c.sum_valor) as valor, sum(c.sum_costo) as costo, sum(c.margen_soles) as margen
-        FROM consolidado_diario_ven c INNER JOIN persona p ON p.pers_codi=c.pers_vend";
-    
-        if ($marca != null) {
-            $query .= " WHERE c.periodo='202309' and marc_codi= :marca"; // Assuming 'marca' is the column name
-        }
-        $query .= " GROUP BY c.pers_vend, cast(p.pers_rsoc as nvarchar(max)) ORDER BY c.pers_vend";
-
-        $stmt = $this->conn->prepare($query);
-    
-        if ($marca != null) {
-            $stmt->bindParam(':marca', $marca, PDO::PARAM_STR);
-        }
-    
+        $sql = "EXEC GetDetalleVenta @marca = :marca, @periodo = :periodo";
+        
+        $stmt = $this->conn->prepare($sql);
+        
+        $stmt->bindParam(':marca', $marca, PDO::PARAM_INT);
+        $stmt->bindParam(':periodo', $periodo, PDO::PARAM_INT);
+        
         $stmt->execute();
+        
         $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        print json_encode($data);
+        echo json_encode($data);
     }
     public function getMarcas(){
         $this->conBDPDO();
@@ -91,7 +165,130 @@ class SqlServer {
             
             print json_encode($data);
     }
+    public function getDatosDetalleVentaFamilia($marca, $periodo) {
+        $this->conBDPDO();
+    
+        $sql = "EXEC GetFamiliasDato @marca = :marca, @periodo = :periodo";
+        
+        $stmt = $this->conn->prepare($sql);
+        
+        $stmt->bindParam(':marca', $marca, PDO::PARAM_INT);
+        $stmt->bindParam(':periodo', $periodo, PDO::PARAM_INT);
+        
+        $stmt->execute();
+        
+        $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        echo json_encode($data);
+    }
+    
+    public function getStockMarca(){
+        $this->conBDPDO();
+        $sql = "EXEC GetStockMarca";
+        
+        $stmt = $this->conn->prepare($sql);
+        
+        $stmt->execute();
+        
+        $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        echo json_encode($data);
+    }
+    public function getStockValorado(){
+        $this->conBDPDO();
+        $sql = "EXEC GetStockValorado";
+        
+        $stmt = $this->conn->prepare($sql);
+        
+        $stmt->execute();
+        
+        $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        echo json_encode($data);
+    }
 
+    public function getValoradoStockMarca(){
+        $this->conBDPDO();
+        $sql = "EXEC GetValoradoStockMarca";
+        
+        $stmt = $this->conn->prepare($sql);
+        
+        $stmt->execute();
+        
+        $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        echo json_encode($data);
+    }
+
+    public function getStockValoradoVar(){
+        $this->conBDPDO();
+        $sql = "EXEC GetStockValoradoVar";
+        
+        $stmt = $this->conn->prepare($sql);
+        
+        $stmt->execute();
+        
+        $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        echo json_encode($data);
+    }
+
+    public function getValoradoStockMarcaVar(){
+        $this->conBDPDO();
+        $sql = "EXEC GetValoradoStockMarcaVar";
+        
+        $stmt = $this->conn->prepare($sql);
+        
+        $stmt->execute();
+        
+        $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        echo json_encode($data);
+    }
+
+    public function getPromedioT2(){
+        $this->conBDPDO();
+        $sql = "EXEC GetPromedioT2";
+        
+        $stmt = $this->conn->prepare($sql);
+        
+        $stmt->execute();
+        
+        $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        echo json_encode($data);
+    }
+
+    public function getPromedioT2Stock(){
+        $this->conBDPDO();
+        $sql = "EXEC GetPromedioT2Stock";
+        
+        $stmt = $this->conn->prepare($sql);
+        
+        $stmt->execute();
+        
+        $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        echo json_encode($data);
+    }
+    
+    public function getStockPorMarca($marca){
+        $this->conBDPDO();
+        $sql = "EXEC GetStockPorMarca @marca = :marca";
+        
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bindParam(':marca', $marca, PDO::PARAM_INT);
+        $stmt->execute();
+        
+        $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        echo json_encode($data);
+    }
+
+    public function getDatosPorPeriodo($periodo) {
+        $this->conBDPDO();
+        $sql = "EXEC GetPorPeriodo @periodo = :periodo";
+        
+        $stmt = $this->conn->prepare($sql);
+        
+        $stmt->bindParam(':periodo', $periodo, PDO::PARAM_INT);
+        
+        $stmt->execute();
+        
+        $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        echo json_encode($data);
+    }
 
 }
 

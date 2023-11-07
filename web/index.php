@@ -41,7 +41,7 @@
 					</li>
 
 					<li class="sidebar-item">
-						<a class="sidebar-link" href="pages-sign-in.html">
+						<a class="sidebar-link" href="venta_por_periodo.php">
               <i class="align-middle" data-feather="bar-chart-2"></i> <span class="align-middle">Pagina3</span>
             </a>
 					</li>
