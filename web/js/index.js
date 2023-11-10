@@ -36,7 +36,11 @@ let table = $('#myTable').DataTable( {
     language: {
     url: '//cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json',
         },
-    select : true
+    select : true,
+    responsive:true,
+    paging: false,
+    scrollCollapse: true,
+    scrollY: '500px'
   } );
 
   let table2 = $('#myTable2').DataTable( {
@@ -75,7 +79,11 @@ let table = $('#myTable').DataTable( {
     language: {
     url: '//cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json',
         },
-    select : true
+    select : true,
+    responsive:true,
+    paging: false,
+    scrollCollapse: true,
+    scrollY: '500px'
   } );
 
   let table3 = $('#tablaporperiodo').DataTable( {
@@ -116,7 +124,10 @@ let table = $('#myTable').DataTable( {
     url: '//cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json',
         },
     select : true,
-	responsive:true
+	responsive:true,
+  paging: false,
+    scrollCollapse: true,
+    scrollY: '500px'
   } );
   
   let table4 = $('#myTable3').DataTable( {
@@ -153,7 +164,11 @@ let table = $('#myTable').DataTable( {
     language: {
     url: '//cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json',
         },
-    select : true
+    select : true,
+    responsive:true,
+    paging: false,
+    scrollCollapse: true,
+    scrollY: '500px'
   } );
 
   let table5 = $('#myTable4').DataTable( {
@@ -188,7 +203,11 @@ let table = $('#myTable').DataTable( {
     language: {
     url: '//cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json',
         },
-    select : true
+    select : true,
+    responsive:true,
+    paging: false,
+    scrollCollapse: true,
+    scrollY: '500px'
   } );
 
 $.ajax({

@@ -154,9 +154,6 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
 													</table>
 								</div>
 						</div>
-			<footer class="footer">
-				<div id="resultado"></div>
-			</footer>
 		</div>
 	</div>
 	<script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
@@ -180,12 +177,9 @@ $('#miComboBox').on('change',function(){
         },
         dataType: 'text',
         success: function(data) {
-			
-            // Actualizar el contenido de otro elemento (por ejemplo, #resultado)
             document.getElementById("marcanom").innerHTML = "Marca: "+optionText;
         },
         error: function() {
-            // Manejar errores si es necesario
         }
     });
     });
