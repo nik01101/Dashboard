@@ -40,7 +40,7 @@ let table = $('#myTable').DataTable( {
     responsive:true,
     paging: false,
     scrollCollapse: true,
-    scrollY: '500px'
+    scrollY: '800px'
   } );
 
   let table2 = $('#myTable2').DataTable( {
@@ -83,52 +83,10 @@ let table = $('#myTable').DataTable( {
     responsive:true,
     paging: false,
     scrollCollapse: true,
-    scrollY: '500px'
+    scrollY: '800px'
   } );
 
-  let table3 = $('#tablaporperiodo').DataTable( {
-    ajax: {
-        "url": "php/tablas_interface.php",
-        "dataType": "json",
-        data: {
-            'periodo': prd,
-            'request': 2,
-        },
-        "contentType": "application/json; charset=utf-8",
-        "type": "GET",
-        "dataSrc": "",
-		"processing": true
-    },
-    columns: [
-        { data: 'marc_codi' },
-        { data: 'marc_descl' },
-        { data: 'marc_descc' },
-        { data: 'sum_valor', render: $.fn.dataTable.render.number( ',', '.', 2 )},
-        { data: 'sum_costo', render: $.fn.dataTable.render.number( ',', '.', 2 ) },
-        { data: 'margen' },
-        { data: 'nro_sku' },
-        { data: 'nro_cob' }
-    ],columnDefs: [ {
-      targets: 5,
-      render: DataTable.render.percentBar( 'round','#FFF', '#7abde6', '#2242b2', '#7abde6', 1, 'groove' )
-    } ],dom: "Bfrtip",
-    buttons: [
-        { extend: 'excel',text: 'Exportar Excel<i class="fas fa-file-excel fa-lg"></i>',
-        className:'btn btn-success excel-exp'},
-        { extend: 'copy',text: 'Copiar Datos<i class="fas fa-file-excel fa-lg"></i>',
-        className:'btn btn-success excel-exp'},
-        { extend: 'csv',text: 'Exportar CSV<i class="fas fa-file-excel fa-lg"></i>',
-        className:'btn btn-success excel-exp'}
-    ],
-    language: {
-    url: '//cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json',
-        },
-    select : true,
-	responsive:true,
-  paging: false,
-    scrollCollapse: true,
-    scrollY: '500px'
-  } );
+  
   
   let table4 = $('#myTable3').DataTable( {
     ajax: {
@@ -168,7 +126,7 @@ let table = $('#myTable').DataTable( {
     responsive:true,
     paging: false,
     scrollCollapse: true,
-    scrollY: '500px'
+    scrollY: '800px'
   } );
 
   let table5 = $('#myTable4').DataTable( {
@@ -207,7 +165,7 @@ let table = $('#myTable').DataTable( {
     responsive:true,
     paging: false,
     scrollCollapse: true,
-    scrollY: '500px'
+    scrollY: '800px'
   } );
 
 $.ajax({

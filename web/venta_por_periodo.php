@@ -23,10 +23,15 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
 	<title>Dashboard Version 1.0</title>
 
 	<link href="css/app.css" rel="stylesheet">
+	<link href="css/style.css" rel="stylesheet">
 	<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
 	<link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
 	<link href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
 	<link href="https://cdn.datatables.net/v/bs5/jszip-3.10.1/dt-1.13.6/b-2.4.2/b-html5-2.4.2/date-1.5.1/r-2.5.0/sl-1.7.0/datatables.min.css" rel="stylesheet">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-contextmenu/2.7.1/jquery.contextMenu.min.css">
+
+
+
 	
 	
 </head>
@@ -90,8 +95,35 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
 					</ul>
 				</div>
 			</nav>
+			<div class="card fixed-top mx-auto d-none" style="max-height: 90%; max-width: 90%; top: 50%; transform: translateY(-50%);" id="floatingCard">
+    			<div class="card-header">
+        			DataTable
+        			<button type="button" class="btn-close float-end" aria-label="Close" id="closeDataTableBtn"></button>
+    			</div>
+    			<div class="card-body" style="overflow-y: auto;">
+        			<div class="table-responsive">
+            			<table id="tablaporfamxmarca" class="table table-striped" style="width:100%;">
+                			<thead>
+                    			<tr>
+                        			<th>Codigo</th>
+                        			<th>Marca</th>
+                        			<th>Marca Desc.</th>
+                        			<th>Valor</th>
+                        			<th>Margen</th>
+                        			<th>SKU</th>
+                        			<th>Cobertura</th>
+                    			</tr>
+                			</thead>
+                			<tbody>
+                			</tbody>
+            			</table>
+        			</div>
+    			</div>
+			</div>
+
 
 			<main class="content">
+				
 						<div class="card flex-fill">
 							<div class="card-header">
 							<h2>Ventas Por Periodo</h2>
@@ -112,7 +144,6 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
 											  <option value="202311">NOVIEMBRE</option>
 											  <option value="202312">DICIEMBRE</option>
 										</select>
-    								<input type="submit" value="Enviar">
 								</form>
 							</div>
 							<div class="card-body mx-5">
@@ -123,7 +154,6 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
             								<th>Marca</th>
 											<th>Marca Desc.</th>
 											<th>Valor</th>
-											<th>Costo</th>
 											<th>Margen</th>
 											<th>SKU</th>
 											<th>Cobertura</th>
@@ -190,9 +220,11 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
 	<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/buttons/2.2.2/js/dataTables.buttons.min.js"></script>
 	<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/plug-ins/1.13.6/dataRender/percentageBars.js"></script>
 	<script src="js/app.js"></script>
-	<script src="js/index.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/chart.js@3.0.0/dist/chart.min.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-contextmenu/2.7.1/jquery.contextMenu.min.js"></script>
+	<script src="js/vtprprd.js"></script>
+
 	
 	
 	<script>
@@ -200,263 +232,13 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
 	var opcionSeleccionada = "<?php echo isset($_SESSION['opcion_seleccionada']) ? $_SESSION['opcion_seleccionada'] : ''; ?>";
 	var periodoNombre = "<?php echo isset($_SESSION['pn']) ? $_SESSION['pn'] : ''; ?>";
 	console.log(opcionSeleccionada);
+	DibujarTabla();
 
 	
-	$(document).ready(function() {
-	document.getElementById("pernom").innerHTML = "Periodo: "+periodoNombre;
-	$('#cbPeriodos').on('change',function(){
-		var optionText = $("#cbPeriodos option:selected").text().valueOf();
-		$.ajax({
-        url: 'Detalle_venta_marca.php',
-        type: 'GET',
-		data: {
-            'pn': optionText
-        },
-        dataType: 'text',
-        success: function(data) {
-
-            // Actualizar el contenido de otro elemento (por ejemplo, #resultado)
-            document.getElementById("pernom").innerHTML = "Periodo: "+optionText;
-        },
-        error: function() {
-            // Manejar errores si es necesario
-        }
-    });
-    });
-});
-
-
-  
-
-  $(document).ready(function() {
-	$.ajax({
-        url: "php/barras.php",
-        dataType: 'json',
-		data: {
-            'request': 1,
-			'periodo':opcionSeleccionada,
-			'marca': 1
-        },
-        contentType: "application/json; charset=utf-8",
-        method: "GET",
-        success: function(data) {
-            var marc_descc = [];
-            var sum_valor = [];
-            console.log(data);
- 
-            for (var i in data) {
-                marc_descc.push(data[i].marc_descc);
-                sum_valor.push((Math.round(data[i].sum_valor) / 100).toFixed(2));
-            };
- 
-            var grafico = new Chart(document.getElementById("chartjs-dashboard-bar1"), {
-				type: "bar",
-				data: {
-					labels: marc_descc,
-					datasets: [{
-						label: "Composicion de Ventas",
-						backgroundColor: window.theme.primary,
-						borderColor: window.theme.primary,
-						hoverBackgroundColor: window.theme.primary,
-						hoverBorderColor: window.theme.primary,
-						data: sum_valor,
-						barPercentage: .75,
-						categoryPercentage: 1
-					}]
-				},
-				options: {
-					maintainAspectRatio: false,
-					legend: {
-						display: false
-					},
-					scales: {
-						yAxes: [{
-							
-							gridLines: {
-								display: true
-							},
-							stacked: false,
-							ticks: {
-								suggestedMax: 1000,
-								beginAtZero: true,
-								stepSize: 20
-							}
-						}],
-						xAxes: [{
-							stacked: true,
-							gridLines: {
-								color: "transparent"
-							}
-						}]
-					},plugins: {
-            datalabels: {
-                display: true, // Show data labels
-                align: 'end', // Position of the data labels (e.g., 'end', 'start', 'center')
-                anchor: 'end', // Anchor point for positioning data labels
-                color: 'black' // Color of the data labels
-            }
-        }
-				}
-			});
-		
-        },
-        error: function(data) {
-            console.log(data);
-        }
-    });
-    	$.ajax({
-        url: "php/barras.php",
-        dataType: 'json',
-		data: {
-            'request': 2,
-			'periodo':opcionSeleccionada,
-			'marca': 1
-        },
-        contentType: "application/json; charset=utf-8",
-        method: "GET",
-        success: function(data) {
-            var periodo = [];
-            var sum_valor = [];
-            console.log(data);
- 
-            for (var i in data) {
-                periodo.push(data[i].periodo);
-                sum_valor.push((Math.round(data[i].sum_valor) / 1000).toFixed(2));
-            };
- 
-            var grafico = new Chart(document.getElementById("chartjs-dashboard-bar2"), {
-				type: "bar",
-				data: {
-					labels: periodo,
-					datasets: [{
-						label: "Evolucion de Ventas",
-						backgroundColor: window.theme.primary,
-						borderColor: window.theme.primary,
-						hoverBackgroundColor: window.theme.primary,
-						hoverBorderColor: window.theme.primary,
-						data: sum_valor,
-						barPercentage: .75,
-						categoryPercentage: 1
-					}]
-				},
-				options: {
-					maintainAspectRatio: false,
-					legend: {
-						display: false
-					},
-					scales: {
-						yAxes: [{
-							
-							gridLines: {
-								display: true
-							},
-							stacked: false,
-							ticks: {
-								suggestedMax: 1000,
-								beginAtZero: true,
-								stepSize: 20
-							}
-						}],
-						xAxes: [{
-							stacked: true,
-							gridLines: {
-								color: "transparent"
-							}
-						}]
-					},plugins: {
-            datalabels: {
-                display: true, // Show data labels
-                align: 'end', // Position of the data labels (e.g., 'end', 'start', 'center')
-                anchor: 'end', // Anchor point for positioning data labels
-                color: 'black' // Color of the data labels
-            }
-        }
-				}
-			});
-		
-        },
-        error: function(data) {
-            console.log(data);
-        }
-    });
-
-	$.ajax({
-        url: "php/barras.php",
-        dataType: 'json',
-		data: {
-            'request': 3,
-			'periodo':opcionSeleccionada,
-			'marca':1
-        },
-        contentType: "application/json; charset=utf-8",
-        method: "GET",
-        success: function(data) {
-            var fecha_em = [];
-            var valor = [];
-            console.log(data);
- 
-            for (var i in data) {
-                fecha_em.push(data[i].fecha_em);
-                valor.push((Math.round(data[i].valor) / 100).toFixed(2));
-            };
- 
-            var grafico = new Chart(document.getElementById("chartjs-dashboard-bar3"), {
-				type: "bar",
-				data: {
-					labels: fecha_em,
-					datasets: [{
-						label: "Ultimas Ventas Diarias",
-						backgroundColor: window.theme.primary,
-						borderColor: window.theme.primary,
-						hoverBackgroundColor: window.theme.primary,
-						hoverBorderColor: window.theme.primary,
-						data: valor,
-						barPercentage: .75,
-						categoryPercentage: 1
-					}]
-				},
-				options: {
-					maintainAspectRatio: false,
-					legend: {
-						display: false
-					},
-					scales: {
-						yAxes: [{
-							
-							gridLines: {
-								display: true
-							},
-							stacked: false,
-							ticks: {
-								suggestedMax: 100,
-								beginAtZero: true,
-								stepSize: 20
-							}
-						}],
-						xAxes: [{
-							stacked: true,
-							gridLines: {
-								color: "transparent"
-							}
-						}]
-					},plugins: {
-            datalabels: {
-                display: true, // Show data labels
-                align: 'end', // Position of the data labels (e.g., 'end', 'start', 'center')
-                anchor: 'end', // Anchor point for positioning data labels
-                color: 'black' // Color of the data labels
-            }
-        }
-				}
-			});
-		
-        },
-        error: function(data) {
-            console.log(data);
-        }
-    });
-});
 	
+	
+
+
 	</script>
 
 	
