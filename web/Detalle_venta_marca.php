@@ -29,6 +29,7 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
 	<title>Dashboard Version 1.0</title>
 
 	<link href="css/app.css" rel="stylesheet">
+	<link href="css/style.css" rel="stylesheet">
 	<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
 	<link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
 	<link href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
@@ -102,11 +103,11 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
 							<h5 id="marcanom">Marca:</h5>
 								<form method="get" action="Detalle_venta_marca.php">
 										<select id="miComboBox" name="marc" class="border-2" >
-  											<option selected disabled hidden >Selecciona una marca</option>
+  											<option value="" selected disabled hidden >Selecciona una marca</option>
 										</select>
 										<h5 id="pernom">Periodo:</h5>
 										<select id="cbPeriodos" name="periodo" class="border-2">
-											  <option selected disabled hidden>Selcciona un Periodo</option>
+											  <option value="" selected disabled hidden>Selcciona un Periodo</option>
 											  <option  value="202301">ENERO</option>
 											  <option value="202302">FEBRERO</option>
 											  <option value="202303">MARZO</option>
@@ -119,8 +120,7 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
 											  <option value="202310">OCTUBRE</option>
 											  <option value="202311">NOVIEMBRE</option>
 											  <option value="202312">DICIEMBRE</option>
-										</select>
-    								<input type="submit" value="Enviar">
+										</select>	
 								</form>
 							</div>
 						</div>
@@ -143,10 +143,9 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
 											<div class="card flex-fill ">
 												<div class="card-header">
 												<h5 class="card-title m-3">Tabla de Datos</h5>
-            										<td>FECHA:</td>
-            										<td><input type="text" id="fecha" name="fecha" class="border-2"></td>
+            										
 												</div>
-												<div class="card-body mx-5">
+												<div class="card-body mx-1">
 													<table id="myTable"   class="table table-striped" style="width:100%">
     													<thead>
         													<tr>
@@ -171,13 +170,10 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
 												<div class="card-header">
 												<h5 class="card-title m-3">Tabla de Datos</h5>
 												<tbody class="m-5">
-													<tr>
-            											<td>FECHA:</td>
-            											<td><input type="text" id="fecha1" name="fecha" class="border-2"></td>
-        											</tr>
+													
 												</tbody>
 												</div>
-												<div class="card-body mx-5">
+												<div class="card-body mx-1">
 													<table id="myTable2"  class="table table-bordered table-hover table-striped m-3" style="width:100%">
     													<thead>
         													<tr>
@@ -254,7 +250,7 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
 	<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/buttons/2.2.2/js/dataTables.buttons.min.js"></script>
 	<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/plug-ins/1.13.6/dataRender/percentageBars.js"></script>
 	<script src="js/app.js"></script>
-	<script src="js/index.js"></script>
+	<script src="js/dtllvtamarca.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/chart.js@3.0.0/dist/chart.min.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
 	<script>
@@ -265,267 +261,7 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
 		console.log(opcionSeleccionada);
 		var marcaNombre = "<?php echo isset($_SESSION['mn']) ? $_SESSION['mn'] : ''; ?>";
 		var periodoNombre = "<?php echo isset($_SESSION['pn']) ? $_SESSION['pn'] : ''; ?>";
-		function copyTextValue(){
-			function copyTextValue() {
-    		var text1 = $("#periodo").find(":selected").text();;
-    		
-			}
-		}
 		
-		$(document).ready(function() {
-		document.getElementById("marcanom").innerHTML = "Marca: "+marcaNombre;
-		document.getElementById("pernom").innerHTML = "Periodo: "+periodoNombre;
-
-		$('#cbPeriodos').on('change',function(){
-		var optionText = $("#cbPeriodos option:selected").text().valueOf();
-		$.ajax({
-        url: 'Detalle_venta_marca.php',
-        type: 'GET',
-		data: {
-            'pn': optionText
-        },
-        dataType: 'text',
-        success: function(data) {
-
-            document.getElementById("pernom").innerHTML = "Periodo: "+optionText;
-        },
-        error: function() {
-        }
-    });
-    });
-		$('#miComboBox').on('change',function(){
-		var optionText = $("#miComboBox option:selected").text().valueOf();
-		$.ajax({
-        url: 'Detalle_venta_marca.php',
-        type: 'GET',
-		data: {
-            'mn': optionText
-        },
-        dataType: 'text',
-        success: function(data) {
-            document.getElementById("marcanom").innerHTML = "Marca: "+optionText;
-        },
-        error: function() {
-        }
-    });
-    });
-	
-    	$.ajax({
-        url: "php/barras.php",
-        dataType: 'json',
-		data: {
-            'request': 4,
-			'periodo':202301,
-			'marca': marcaSeleccionada
-        },
-        contentType: "application/json; charset=utf-8",
-        method: "GET",
-        success: function(data) {
-            var fami_descc = [];
-            var Valor = [];
-            console.log(data);
- 
-            for (var i in data) {
-                fami_descc.push(data[i].fami_descc);
-                Valor.push((Math.round(data[i].Valor) / 1000).toFixed(2));
-            };
- 
-            var grafico = new Chart(document.getElementById("chartjs-dashboard-bar1"), {
-				type: "bar",
-				data: {
-					labels: fami_descc,
-					datasets: [{
-						label: "Consolidado Por Periodo",
-						backgroundColor: window.theme.primary,
-						borderColor: window.theme.primary,
-						hoverBackgroundColor: window.theme.primary,
-						hoverBorderColor: window.theme.primary,
-						data: Valor,
-						barPercentage: .75,
-						categoryPercentage: 1
-					}]
-				},
-				options: {
-					maintainAspectRatio: false,
-					legend: {
-						display: false
-					},
-					scales: {
-						yAxes: [{
-							gridLines: {
-								display: false
-							},
-							stacked: false,
-							ticks: {
-								stepSize: 20
-							}
-						}],
-						xAxes: [{
-							stacked: false,
-							gridLines: {
-								color: "transparent"
-							}
-						}]
-					},plugins: {
-            datalabels: {
-                display: true, // Show data labels
-                align: 'end', // Position of the data labels (e.g., 'end', 'start', 'center')
-                anchor: 'end', // Anchor point for positioning data labels
-                color: 'black' // Color of the data labels
-            }
-        }
-				}
-			});
-        },
-        error: function(data) {
-            console.log(data);
-        }
-    });
-
-	$.ajax({
-        url: "php/barras.php",
-        dataType: 'json',
-		data: {
-            'request': 5,
-			'periodo':null,
-			'marca': null
-        },
-        contentType: "application/json; charset=utf-8",
-        method: "GET",
-        success: function(data) {
-            var periodo = [];
-            var sum_valor = [];
-            console.log(data);
- 
-            for (var i in data) {
-                periodo.push(data[i].periodo);
-                sum_valor.push((Math.round(data[i].sum_valor) / 1000	).toFixed(2));
-            };
- 
-            var grafico = new Chart(document.getElementById("chartjs-dashboard-bar2"), {
-				type: "bar",
-				data: {
-					labels: periodo,
-					datasets: [{
-						label: "Consolidado Por Periodo",
-						backgroundColor: window.theme.primary,
-						borderColor: window.theme.primary,
-						hoverBackgroundColor: window.theme.primary,
-						hoverBorderColor: window.theme.primary,
-						data: sum_valor,
-						barPercentage: .75,
-						categoryPercentage: 1
-					}]
-				},
-				options: {
-					maintainAspectRatio: false,
-					legend: {
-						display: false
-					},
-					scales: {
-						yAxes: [{
-							gridLines: {
-								display: false
-							},
-							stacked: false,
-							ticks: {
-								stepSize: 20
-							}
-						}],
-						xAxes: [{
-							stacked: false,
-							gridLines: {
-								color: "transparent"
-							}
-						}]
-					},plugins: {
-            datalabels: {
-                display: true, // Show data labels
-                align: 'end', // Position of the data labels (e.g., 'end', 'start', 'center')
-                anchor: 'end', // Anchor point for positioning data labels
-                color: 'black' // Color of the data labels
-            }
-        }
-				}
-			});
-        },
-        error: function(data) {
-            console.log(data);
-        }
-    });
-
-	$.ajax({
-        url: "php/barras.php",
-        dataType: 'json',
-		data: {
-            'request': 6,
-			'periodo':null,
-			'marca': null
-        },
-        contentType: "application/json; charset=utf-8",
-        method: "GET",
-        success: function(data) {
-            var fecha_em = [];
-            var Ventas = [];
-            console.log(data);
- 
-            for (var i in data) {
-                fecha_em.push(data[i].fecha_em);
-                Ventas.push((Math.round(data[i].Ventas) / 100).toFixed(2));
-            };
- 
-            var grafico = new Chart(document.getElementById("chartjs-dashboard-bar3"), {
-				type: "bar",
-				data: {
-					labels: fecha_em,
-					datasets: [{
-						label: "Consolidado Por Periodo",
-						backgroundColor: window.theme.primary,
-						borderColor: window.theme.primary,
-						hoverBackgroundColor: window.theme.primary,
-						hoverBorderColor: window.theme.primary,
-						data: Ventas,
-						barPercentage: .75,
-						categoryPercentage: 1
-					}]
-				},
-				options: {
-					maintainAspectRatio: false,
-					legend: {
-						display: false
-					},
-					scales: {
-						yAxes: [{
-							gridLines: {
-								display: false
-							},
-							stacked: false,
-							ticks: {
-								stepSize: 20
-							}
-						}],
-						xAxes: [{
-							stacked: false,
-							gridLines: {
-								color: "transparent"
-							}
-						}]
-					},plugins: {
-            datalabels: {
-                display: true, // Show data labels
-                align: 'end', // Position of the data labels (e.g., 'end', 'start', 'center')
-                anchor: 'end', // Anchor point for positioning data labels
-                color: 'black' // Color of the data labels
-            }
-        }
-				}
-			});
-        },
-        error: function(data) {
-            console.log(data);
-        }
-    });
-});
 		
 	</script>
 </body>

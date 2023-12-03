@@ -1,7 +1,6 @@
 <?php
 session_start();
 include("./sqlserver.php");
-// Seteamos la cabecera a JSON
 header('Content-Type: application/json');
 
 $sqlserver = new SqlServer();
@@ -67,6 +66,18 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
                 break;
             case 11:
                 $sqlserver->getPromedioT2Stock();
+                break;
+            case 12:
+                $sqlserver->getFamPorMarca($_GET['marca'],$_GET['periodo']);
+                break;
+            case 13:
+                $sqlserver->getPorPeriodoVar($_GET['periodo'],$_GET['marca']);
+                break;
+            case 14:
+                $sqlserver->getFamPorMarcaVar($_GET['marca'],$_GET['periodo'],$_GET['familia']);
+                break;
+            case 15:
+                $sqlserver->getDatosDetalleVentaMarcaVar($_GET['marca'],$_GET['periodo']);
                 break;
             default:
                 echo "Acción no válida";

@@ -7,26 +7,24 @@ class SqlServer {
 
     public function __construct() {
         require("../../config.php");
-        global $nombreBD,$ipBD,$usuarioBD,$passBD;
+        global $nombreBD,$usuarioBD;
         $this->nombreBD = $config['dbNombre'];
-        $this->ipBD = $ipBD;
         $this->usuarioBD = $config['dbUser'];
-        $this->passBD = $passBD;
         
         
     }
-    public function conBDPDO()
-    {  
-        
-        try {
-            $this->conn = new PDO("sqlsrv:Server=".$this->usuarioBD.";Database=".$this->nombreBD);
+        public function conBDPDO()
+        {  
             
-            return true;
-        } catch (PDOException $e) {
-            echo "Error connecting to the database: " . $e->getMessage() . "\n";
-            return false;
+            try {
+                $this->conn = new PDO("sqlsrv:Server=".$this->usuarioBD.";Database=".$this->nombreBD);
+                
+                return true;
+            } catch (PDOException $e) {
+                echo "Error connecting to the database: " . $e->getMessage() . "\n";
+                return false;
+            }
         }
-    }
 
     public function getDatosDona(){
         $this->conBDPDO();
@@ -44,22 +42,45 @@ class SqlServer {
         print json_encode($data);
     }
 
-    public function getDatosBarras($request,$parametro,$parametro2){
+    public function getDatosBarrasRango($request,$fecini,$fecfin){
+        $this->conBDPDO();
+        switch ($request) {
+            case 7:{
+                $query = "SELECT top 15 fecha_em, sum(sum_valor) as valor
+                            FROM consolidado_diario_ven
+                            WHERE fecha_em >= :fecini AND fecha_em <= :fecfin
+                            GROUP BY fecha_em
+                            ORDER BY fecha_em DESC";
+            
+                    $stmt = $this->conn->prepare($query);
+                    $stmt->bindParam(':fecini', $fecini, PDO::PARAM_STR);
+                    $stmt->bindParam(':fecfin', $fecfin, PDO::PARAM_STR);
+                    $stmt->execute(); // Use execute instead of query
+                    $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            
+                    print json_encode($data);
+            break;
+            }default:{
+                echo"solicitud invalida ". $request ."";
+            }
+        }
+    }
+    public function getDatosBarras($request,$periodo,$parametro2){
         $this->conBDPDO();
         switch ($request) {
             case 1:{
                 $query = "SELECT top 8 m.marc_descc, c.sum_valor
                 FROM consolidado_mes_marca c INNER JOIN marca m ON m.marc_codi=c.marc_codi";
     
-                if ($parametro != null) {
+                if ($periodo != null) {
                 $query .= " WHERE c.periodo= :periodo"; 
                 }
                 $query .= " ORDER BY c.sum_valor DESC";
 
                 $stmt = $this->conn->prepare($query);
     
-                if ($parametro != null) {
-                $stmt->bindParam(':periodo', $parametro, PDO::PARAM_STR);
+                if ($periodo != null) {
+                $stmt->bindParam(':periodo', $periodo, PDO::PARAM_STR);
                 }
                 $stmt->execute();
                 $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -78,33 +99,35 @@ class SqlServer {
                 $result->closeCursor();
                 print json_encode($data);
             }break;
-            case 3:{
-                $query = sprintf("SELECT TOP 7 fecha_em, sum(sum_valor) as valor
-                FROM consolidado_diario_ven
-                WHERE periodo='202310'
-                GROUP BY fecha_em
-                ORDER BY fecha_em DESC");
-                $result = $this->conn->query($query);
-                $data = array();
-                foreach ($result as $row) {
-        	    $data[] = $row;
+            case 3:
+                {
+                    $query = "SELECT TOP 7 fecha_em, sum(sum_valor) as valor
+                            FROM consolidado_diario_ven
+                            WHERE periodo= :periodo
+                            GROUP BY fecha_em
+                            ORDER BY fecha_em DESC";
+            
+                    $stmt = $this->conn->prepare($query);
+                    $stmt->bindParam(':periodo', $periodo, PDO::PARAM_STR);
+                    $stmt->execute(); // Use execute instead of query
+                    $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            
+                    print json_encode($data);
                 }
-                $result->closeCursor();
-                print json_encode($data);
-            }break;
+            break;
             case 4:{
                 $query = "SELECT  f.fami_descc, sum(c.sum_valor) as Valor
                 FROM consolidado_mes_familia c JOIN familia f ON f.fami_codi=c.fami_codi";
     
-                if ($parametro != null ) {
+                if ($periodo != null ) {
                 $query .= " WHERE c.periodo= :periodo and f.marc_codi= :marca"; 
                 }
                 $query .= " GROUP BY f.fami_descc";
 
                 $stmt = $this->conn->prepare($query);
     
-                if ($parametro != null) {
-                $stmt->bindParam(':periodo', $parametro, PDO::PARAM_STR);
+                if ($periodo != null) {
+                $stmt->bindParam(':periodo', $periodo, PDO::PARAM_STR);
                 $stmt->bindParam(':marca', $parametro2, PDO::PARAM_STR);
                 }
                 $stmt->execute();
@@ -135,6 +158,21 @@ class SqlServer {
                 $result->closeCursor();
                 print json_encode($data);
             }break;
+            case 7:{
+                $query = "SELECT fecha_em, sum(sum_valor) as valor
+                            FROM consolidado_diario_ven
+                            WHERE periodo= :periodo
+                            GROUP BY fecha_em
+                            ORDER BY fecha_em DESC";
+            
+                    $stmt = $this->conn->prepare($query);
+                    $stmt->bindParam(':periodo', $periodo, PDO::PARAM_STR);
+                    $stmt->execute(); // Use execute instead of query
+                    $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            
+                    print json_encode($data);
+            }
+            break;
             default:{
                 echo"solicitud invalida ". $request ."";
             }
@@ -144,6 +182,20 @@ class SqlServer {
     public function getDatosDetalleVentaMarca($marca,$periodo) {
         $this->conBDPDO();
         $sql = "EXEC GetDetalleVenta @marca = :marca, @periodo = :periodo";
+        
+        $stmt = $this->conn->prepare($sql);
+        
+        $stmt->bindParam(':marca', $marca, PDO::PARAM_INT);
+        $stmt->bindParam(':periodo', $periodo, PDO::PARAM_INT);
+        
+        $stmt->execute();
+        
+        $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        echo json_encode($data);
+    }
+    public function getDatosDetalleVentaMarcaVar($marca,$periodo) {
+        $this->conBDPDO();
+        $sql = "EXEC GetDetalleVentaVar @marca = :marca, @periodo = :periodo";
         
         $stmt = $this->conn->prepare($sql);
         
@@ -290,7 +342,47 @@ class SqlServer {
         echo json_encode($data);
     }
 
+    public function getFamPorMarca($marca,$periodo) {
+        $this->conBDPDO();
+        $sql = "EXEC GetFamPorMarca @marca = :marca, @periodo = :periodo";
+        
+        $stmt = $this->conn->prepare($sql);
+        
+        $stmt->bindParam(':marca', $marca, PDO::PARAM_INT);
+        $stmt->bindParam(':periodo', $periodo, PDO::PARAM_INT);
+        
+        $stmt->execute();
+        
+        $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        echo json_encode($data);
+    }
+    public function getPorPeriodoVar($periodo,$marca) {
+        $this->conBDPDO();
+        $sql = "EXEC GetPorPeriodoVar  @periodo = :periodo, @marca = :marca";
+        
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bindParam(':periodo', $periodo, PDO::PARAM_INT);
+        $stmt->bindParam(':marca', $marca, PDO::PARAM_INT);
+        
+        $stmt->execute();
+        
+        $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        echo json_encode($data);
+    }
+    public function getFamPorMarcaVar($marca,$periodo,$familia) {
+        $this->conBDPDO();
+        $sql = "EXEC GetFamPorMarcaVar @marca = :marca, @periodo = :periodo, @familia = :familia";
+        
+        $stmt = $this->conn->prepare($sql);
+        
+        $stmt->bindParam(':marca', $marca, PDO::PARAM_INT);
+        $stmt->bindParam(':periodo', $periodo, PDO::PARAM_INT);
+        $stmt->bindParam(':familia', $familia, PDO::PARAM_INT);
+        
+        $stmt->execute();
+        
+        $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        echo json_encode($data);
+    }
 }
-
-
 ?>

@@ -3,6 +3,7 @@ var marc = urlParams.get('marc');
 var prd = urlParams.get('periodo');
 var table3;
 var tablefam;
+var grafbar3;
 
 function DibujarTabla($periodo){
  table3 = $('#tablaporperiodo').DataTable( {
@@ -47,23 +48,52 @@ function DibujarTabla($periodo){
     scrollCollapse: true,
         scrollY: '800px',
         "createdRow": function(row, data, dataIndex) {
-            var sum_valorValue = parseFloat(data.sum_valor);
-            var arrowIcon = sum_valorValue > 0 ? '<span class="green-arrow">&#9650;</span>' : '<span class="red-arrow">&#9660;</span>';
-
-            $('td:eq(3)', row).html(arrowIcon + ' ' + sum_valorValue);
+            
+            if ($periodo=='202301'){
+                var arrowIcon = sum_valorValue > 0 ? '<span class="green-arrow">&#9650;</span>' : '<span class="red-arrow">&#9660;</span>';
+                var sum_valorValue = parseFloat(data.sum_valor);
+                var formattedValue = new Intl.NumberFormat('en-US', { style: 'decimal', minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(sum_valorValue);
+                        $('td:eq(3)', row).html(arrowIcon + ' ' + formattedValue);
+            }else{
+                $.ajax({
+                    url: 'php/tablas_interface.php',
+                    type: 'GET',
+                    dataType: 'json',
+                    dataSrc: '',
+                    data: {'periodo' : $periodo,
+                            'marca' : data.marc_codi,
+                            'request': 13},
+                    success: function(response) {
+                        console.log(response.sum_valor+'aa');
+                        var Valorvar = parseFloat(response[0].sum_valor);
+                        console.log(Valorvar);
+                        var sum_valorValue = parseFloat(data.sum_valor);
+                        console.log(sum_valorValue);
+                        var porcentaje = ((sum_valorValue - Valorvar)/Valorvar)*100;
+                        var porcertajeformat = new Intl.NumberFormat('en-US', { style: 'decimal', minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(porcentaje);
+                        var arrowIcon = sum_valorValue > Valorvar ? '<span class="green-arrow">&#9650;'+porcertajeformat+'%</span>' : '<span class="red-arrow">&#9660;'+porcertajeformat+'%</span>';
+                        var formattedValue = new Intl.NumberFormat('en-US', { style: 'decimal', minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(sum_valorValue);
+                        $('td:eq(3)', row).html(arrowIcon + ' ' + formattedValue);
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Error making AJAX request:', status, error);
+                    }
+                });
+            }
+            
         }    
   } );
 
 };
 function DibujarTablaFam($marca){
-    
+    var prdo = document.getElementById("cbPeriodos").value;
     tablefam = $('#tablaporfamxmarca').DataTable( {
         ajax: {
             "url": "php/tablas_interface.php",
             "dataType": "json",
             data: {
-                'periodo': prd,
-                'request': 2,
+                'periodo': prdo,
+                'request': 12,
                 'marca': $marca
             },
             "contentType": "application/json; charset=utf-8",
@@ -72,13 +102,11 @@ function DibujarTablaFam($marca){
             "processing": true
         },
         columns: [
-            { data: 'marc_codi' },
-            { data: 'marc_descl' },
-            { data: 'marc_descc' },
-            { data: 'sum_valor', render: $.fn.dataTable.render.number( ',', '.', 2 )},
-            { data: 'margen' },
-            { data: 'nro_sku' },
-            { data: 'nro_cob' }
+            { data: 'fami_codi' },
+            { data: 'fami_descl' },
+            { data: 'fami_descc' },
+            { data: 'valor', render: $.fn.dataTable.render.number( ',', '.', 2 )},
+            { data: 'margen' }
         ],columnDefs: [ {
           targets: 4,
           render: DataTable.render.percentBar( 'round','#FFF', '#7abde6', '#2242b2', '#7abde6', 1, 'groove' )
@@ -100,45 +128,31 @@ function DibujarTablaFam($marca){
         scrollCollapse: true,
             scrollY: '800px',
             "createdRow": function(row, data, dataIndex) {
-                // Assuming 'margen' is the column index for the values you want to check
-                var sum_valorValue = parseFloat(data.sum_valor);
+                var valorValue = parseFloat(data.valor);
+                var arrowIcon = valorValue > 0 ? '<span class="green-arrow">&#9650;</span>' : '<span class="red-arrow">&#9660;</span>';
     
-                // Create an arrow icon based on the 'margen' value
-                var arrowIcon = sum_valorValue > 0 ? '<span class="green-arrow">&#9650;</span>' : '<span class="red-arrow">&#9660;</span>';
-    
-                // Assuming you want to add the arrow to the sixth column (index 5)
-                $('td:eq(3)', row).html(arrowIcon + ' ' + sum_valorValue);
-            }    
+                $('td:eq(3)', row).html(arrowIcon + ' ' + data.valor);
+            } 
       } );
 }
 function AddContext(){
   $.contextMenu({
     selector: '#tablaporperiodo tbody tr',
     callback: function (key, options) {
-        // Get the selected row data
         var rowData = table3.row(this).data();
 
-        // Handle context menu actions
         switch (key) {
-            case 'edit':
-                // Handle edit action
+            case 'fami':
                 console.log('Edit clicked for row with data:', rowData);
                 $('#floatingCard').toggleClass('d-none');
                 $('#tablaporfamxmarca').DataTable().clear().destroy();
                 DibujarTablaFam(rowData.marc_codi);
 
                 break;
-            case 'delete':
-                // Handle delete action
-                console.log('Delete clicked for row with data:', rowData);
-                break;
-            // Add more cases for additional actions
         }
     },
     items: {
-        edit: { name: 'Edit', icon: 'edit' },
-        delete: { name: 'Delete', icon: 'delete' }
-        // Add more context menu items as needed
+        fami: { name: 'Ver familias', icon: 'table' }
     }
 });
 };
@@ -169,7 +183,6 @@ $(document).ready(function() {
         },
         dataType: 'text',
         success: function(data) {
-
             document.getElementById("pernom").innerHTML = "Periodo: "+optionText;
             var prdo = document.getElementById("cbPeriodos").value;
             console.log(prdo);
@@ -183,6 +196,8 @@ $(document).ready(function() {
     });
     });
 });
+// combo para grafico de barras ----------------------------------------------------------------
+
 
   $(document).ready(function() {
 	$.ajax({
@@ -356,7 +371,7 @@ $(document).ready(function() {
                 valor.push((Math.round(data[i].valor) / 100).toFixed(2));
             };
  
-            var grafico = new Chart(document.getElementById("chartjs-dashboard-bar3"), {
+            grafbar3 = new Chart(document.getElementById("chartjs-dashboard-bar3"), {
 				type: "bar",
 				data: {
 					labels: fecha_em,
@@ -410,5 +425,174 @@ $(document).ready(function() {
         error: function(data) {
             console.log(data);
         }
+    });
+});
+
+
+$(document).ready(function() {
+    
+	$('#cbPeriodos2').on('change',function(){
+        var prdo2 = document.getElementById("cbPeriodos2").value;
+         console.log(prdo2);
+        grafbar3.destroy();
+		$.ajax({
+            url: "php/barras.php",
+            dataType: 'json',
+            data: {
+                'request': 3,
+                'periodo': prdo2,
+                'marca': 1
+            },
+            contentType: "application/json; charset=utf-8",
+            method: "GET",
+            success: function(data) {
+                var fecha_em = [];
+                var valor = [];
+                console.log(data);
+     
+                for (var i in data) {
+                    fecha_em.push(data[i].fecha_em);
+                    valor.push((Math.round(data[i].valor) / 100).toFixed(2));
+                };
+                grafbar3 = new Chart(document.getElementById("chartjs-dashboard-bar3"), {
+                    type: "bar",
+                    data: {
+                        labels: fecha_em,
+                        datasets: [{
+                            label: "Ultimas Ventas Diarias",
+                            backgroundColor: window.theme.primary,
+                            borderColor: window.theme.primary,
+                            hoverBackgroundColor: window.theme.primary,
+                            hoverBorderColor: window.theme.primary,
+                            data: valor,
+                            barPercentage: .75,
+                            categoryPercentage: 1
+                        }]
+                    },
+                    options: {
+                        maintainAspectRatio: false,
+                        legend: {
+                            display: false
+                        },
+                        scales: {
+                            yAxes: [{
+                                
+                                gridLines: {
+                                    display: true
+                                },
+                                stacked: false,
+                                ticks: {
+                                    suggestedMax: 100,
+                                    beginAtZero: true,
+                                    stepSize: 20
+                                }
+                            }],
+                            xAxes: [{
+                                stacked: true,
+                                gridLines: {
+                                    color: "transparent"
+                                }
+                            }]
+                        },plugins: {
+                datalabels: {
+                    display: true, // Show data labels
+                    align: 'end', // Position of the data labels (e.g., 'end', 'start', 'center')
+                    anchor: 'end', // Anchor point for positioning data labels
+                    color: 'black' // Color of the data labels
+                }
+            }
+                    }
+                });
+            
+            },
+            error: function(data) {
+                console.log(data);
+            }
+        });
+    });
+
+    $('#filterButton').click(function () {
+        var startDate = $('#startDate').val();
+        var endDate = $('#endDate').val();
+
+        
+        console.log('Start Date:', startDate);
+        console.log('End Date:', endDate);
+        grafbar3.destroy();
+		$.ajax({
+            url: "php/barras.php",
+            dataType: 'json',
+            data: {
+                'request': 7,
+                'fecini': startDate,
+                'fecfin': endDate
+            },
+            contentType: "application/json; charset=utf-8",
+            method: "GET",
+            success: function(data) {
+                var fecha_em = [];
+                var valor = [];
+                console.log(data);
+     
+                for (var i in data) {
+                    fecha_em.push(data[i].fecha_em);
+                    valor.push((Math.round(data[i].valor) / 100).toFixed(2));
+                };
+                grafbar3 = new Chart(document.getElementById("chartjs-dashboard-bar3"), {
+                    type: "bar",
+                    data: {
+                        labels: fecha_em,
+                        datasets: [{
+                            label: "Ultimas Ventas Diarias",
+                            backgroundColor: window.theme.primary,
+                            borderColor: window.theme.primary,
+                            hoverBackgroundColor: window.theme.primary,
+                            hoverBorderColor: window.theme.primary,
+                            data: valor,
+                            barPercentage: .75,
+                            categoryPercentage: 1
+                        }]
+                    },
+                    options: {
+                        maintainAspectRatio: false,
+                        legend: {
+                            display: false
+                        },
+                        scales: {
+                            yAxes: [{
+                                
+                                gridLines: {
+                                    display: true
+                                },
+                                stacked: false,
+                                ticks: {
+                                    suggestedMax: 100,
+                                    beginAtZero: true,
+                                    stepSize: 20
+                                }
+                            }],
+                            xAxes: [{
+                                stacked: true,
+                                gridLines: {
+                                    color: "transparent"
+                                }
+                            }]
+                        },plugins: {
+                datalabels: {
+                    display: true, 
+                    align: 'end', 
+                    anchor: 'end', 
+                    color: 'black' 
+                }
+            }
+                    }
+                });
+            
+            },
+            error: function(data) {
+                console.log(data);
+            }
+        });
+        
     });
 });

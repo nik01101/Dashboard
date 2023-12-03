@@ -28,6 +28,9 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
             case 6:
                 $sqlserver->getDatosBarras($accion,$_GET['periodo'],$_GET['marca']);
                 break;
+            case 7:
+                $sqlserver->getDatosBarrasRango($accion,$_GET['fecini'],$_GET['fecfin']);
+                break;
             default:
                 echo "Acción no válida";
                 break;

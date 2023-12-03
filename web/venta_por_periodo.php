@@ -29,6 +29,7 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
 	<link href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
 	<link href="https://cdn.datatables.net/v/bs5/jszip-3.10.1/dt-1.13.6/b-2.4.2/b-html5-2.4.2/date-1.5.1/r-2.5.0/sl-1.7.0/datatables.min.css" rel="stylesheet">
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-contextmenu/2.7.1/jquery.contextMenu.min.css">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css">
 
 
 
@@ -95,6 +96,7 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
 					</ul>
 				</div>
 			</nav>
+			<!--Tarjeta flotante para la tabla de familias cuando se seleccione marca-->
 			<div class="card fixed-top mx-auto d-none" style="max-height: 90%; max-width: 90%; top: 50%; transform: translateY(-50%);" id="floatingCard">
     			<div class="card-header">
         			DataTable
@@ -106,12 +108,10 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
                 			<thead>
                     			<tr>
                         			<th>Codigo</th>
-                        			<th>Marca</th>
-                        			<th>Marca Desc.</th>
+                        			<th>familia</th>
+                        			<th>Familia Desc.</th>
                         			<th>Valor</th>
                         			<th>Margen</th>
-                        			<th>SKU</th>
-                        			<th>Cobertura</th>
                     			</tr>
                 			</thead>
                 			<tbody>
@@ -146,7 +146,7 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
 										</select>
 								</form>
 							</div>
-							<div class="card-body mx-5">
+							<div class="card-body mx-1">
 								<table id="tablaporperiodo"   class="table table-striped" style="width:100%">
     								<thead>
         								<tr>
@@ -164,40 +164,70 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
 								</table>
 							</div>	
 						</div>
-						<div class="row">
-							<div class="col-12 col-lg-4 col-xxl-4 d-flex">
-							<div class="card flex-fill">
-								<div class="card-header">
-									<h5 class="card-title mb-0">COMPOSICION DE VENTAS</h5>
-								</div>
-								<div class="card-body d-flex">
-									<div class="align-self-center w-100">
-									<div class="align-self-center chart chart-lg">
-										<canvas id="chartjs-dashboard-bar1"></canvas>
-									</div>
-										</div>
-									</div>
-								</div>
-							</div>
-								<div class="col-12 col-lg-4 col-xxl-4 d-flex">
-										<div class="card flex-fill">
-											<div class="card-header">
-												<h5 class="card-title mb-0">EVOLUCION DE VENTAS</h5>
-											</div>
-											<div class="card-body d-flex">
-												<div class="align-self-center w-100">
-												<div class="align-self-center chart chart-lg">
-													<canvas id="chartjs-dashboard-bar2"></canvas>
-												</div>
-												</div>
-											</div>
-										</div>
-									</div>
-									
-										<div class="col-12 col-lg-4 col-xxl-4 d-flex">
+						<div class="row justify-content-center">
+    <div class="col-12 col-lg-4 col-xxl-4 d-flex">
+        <div class="card flex-fill">
+            <div class="card-header">
+                <h5 class="card-title mb-0">COMPOSICION DE VENTAS</h5>
+            </div>
+            <div class="card-body d-flex">
+                <div class="align-self-center w-100">
+                    <div class="align-self-center chart chart-lg">
+                        <canvas id="chartjs-dashboard-bar1"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-12 col-lg-4 col-xxl-4 d-flex">
+        <div class="card flex-fill">
+            <div class="card-header">
+                <h5 class="card-title mb-0">EVOLUCION DE VENTAS</h5>
+            </div>
+            <div class="card-body d-flex">
+                <div class="align-self-center w-100">
+                    <div class="align-self-center chart chart-lg">
+                        <canvas id="chartjs-dashboard-bar2"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+							<div class="row">
+							<div class="col-12">
 										<div class="card flex-fill">
 											<div class="card-header">
 												<h5 class="card-title mb-0">ULTIMAS VENTAS DIARIAS</h5>
+												<h3 class="card-title mb-0">Por Periodo</h3>
+												<form method="get" action="venta_por_periodo.php">
+												<select id="cbPeriodos2" name="periodo" class="border-2">
+												<option selected disabled hidden value="202301	">Selcciona un Periodo</option>
+											  	<option  value="202301">ENERO</option>
+											  	<option value="202302">FEBRERO</option>
+											  	<option value="202303">MARZO</option>
+											  	<option value="202304">ABRIL</option>
+											  	<option value="202305">MAYO</option>
+											  	<option value="202306">JUNIO</option>
+											  	<option value="202307">JULIO</option>
+											  	<option value="202308">AGOSTO</option>
+											  	<option value="202309">SEPTIEMBRE</option>
+											  	<option value="202310">OCTUBRE</option>
+											  	<option value="202311">NOVIEMBRE</option>
+											  	<option value="202312">DICIEMBRE</option>
+										</select>
+										</form>
+										<h3 class="card-title mb-0">Por Rango</h3>
+										<div class="row">
+        								<div class="col-2">
+            								<input type="text" id="startDate" class="form-control custom-date-input" placeholder="Start Date">
+        								</div>
+        								<div class="col-2">
+            								<input type="text" id="endDate" class="form-control custom-date-input" placeholder="End Date">
+        								</div>
+    								</div>
+										<button id="filterButton" class="btn btn-primary mt-2">Filter</button>
 											</div>
 											<div class="card-body d-flex">
 												<div class="align-self-center w-100">
@@ -219,6 +249,7 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
 	<script src="https://cdn.datatables.net/v/bs5/jszip-3.10.1/dt-1.13.6/b-2.4.2/b-html5-2.4.2/date-1.5.1/r-2.5.0/sl-1.7.0/datatables.min.js"></script>
 	<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/buttons/2.2.2/js/dataTables.buttons.min.js"></script>
 	<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/plug-ins/1.13.6/dataRender/percentageBars.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
 	<script src="js/app.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/chart.js@3.0.0/dist/chart.min.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
@@ -233,7 +264,12 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
 	var periodoNombre = "<?php echo isset($_SESSION['pn']) ? $_SESSION['pn'] : ''; ?>";
 	console.log(opcionSeleccionada);
 	DibujarTabla();
-
+	$(document).ready(function () {
+    $('#startDate, #endDate').datepicker({
+        format: 'yyyy-mm-dd',
+        autoclose: true
+    });
+	});
 	
 	
 	

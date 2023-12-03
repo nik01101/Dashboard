@@ -99,22 +99,22 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
 						<div class="card flex-fill">
 							<div class="card-header">
 							<h2>Detalle de Venta Por Marca</h2>
-    							<div class="row justify-content-start">
-        							<div class="col-2">
-            							<h4 id="fecreport">Fecha de Reporte: </h4>
-										<h4>Stock Valorado: <input id="valorado" type="text" size="9" disabled/></h4>
-										<h4 id="variaciontot">Variacion: </h4>
-        							</div>
-        							<div class="col-2">
-            							<h4>Promedio Costo T2: <input id="promediot2" type="text" size="9" disabled/></h4>
-										
-        							</div>
-        							<div class="col-1">
-            							<h4>Dias Stock: <input id="diastock" type="text" size="9" disabled/></h4>
-        							</div>
-    							</div>
+							<div class="row justify-content-start">
+    						<div class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2">
+        						<h4 id="fecreport">Fecha de Reporte: </h4>
+        						<h4>Stock Valorado: <input id="valorado" type="text" size="9" disabled/></h4>
+        						<h4 id="variaciontot">Variacion: </h4>
+    						</div>
+    						<div class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2">
+        						<h4>Promedio Costo T2: <input id="promediot2" type="text" size="9" disabled/></h4>
+    						</div>
+    						<div class="col-12 col-sm-12 col-md-4 col-lg-6 col-xl-8">
+        						<h4>Dias Stock: <input id="diastock" type="text" size="9" disabled/></h4>
+    						</div>
+						</div>
+
 							</div>
-								<div class="card-body mx-5">
+								<div class="card-body mx-1">
 													<table id="myTable3"  class="table table-bordered table-hover table-striped m-3" style="width:100%">
     													<thead>
         													<tr>

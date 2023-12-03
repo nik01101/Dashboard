@@ -121,22 +121,22 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
 						<div class="card flex-fill">
 							<div class="card-header">
 							<h2>Detalle Stock Por Marca</h2>
-    							<div class="row justify-content-start">
-        							<div class="col-2">
-            							<h4 id="fecreport">Fecha de Reporte: </h4>
-										<h4>Stock Valorado: <input id="valoradostk" type="text" size="9" disabled/></h4>
-										<h4 id="variaciontotstk">Variacion: </h4>
-        							</div>
-        							<div class="col-2">
-            							<h4>Promedio Costo T2: <input id="promediot2stk" type="text" size="9" disabled/></h4>
-										
-        							</div>
-        							<div class="col-1">
-            							<h4>Dias Stock: <input id="diastockmarc" type="text" size="9" disabled/></h4>
-        							</div>
-    							</div>
+							<div class="row justify-content-start">
+    						<div class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2">
+        						<h4 id="fecreport">Fecha de Reporte: </h4>
+        						<h4>Stock Valorado: <input id="valoradostk" type="text" size="9" disabled/></h4>
+        						<h4 id="variaciontotstk">Variacion: </h4>
+    						</div>
+    						<div class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2">
+        						<h4>Promedio Costo T2: <input id="promediot2stk" type="text" size="9" disabled/></h4>
+    						</div>
+    						<div class="col-12 col-sm-12 col-md-4 col-lg-6 col-xl-8">
+        						<h4>Dias Stock: <input id="diastockmarc" type="text" size="9" disabled/></h4>
+    						</div>
+						</div>
+
 							</div>
-								<div class="card-body mx-5">
+								<div class="card-body mx-1">
 													<table id="myTable4"  class="table table-bordered table-hover table-striped m-3" style="width:100%">
     													<thead>
         													<tr>
@@ -163,26 +163,15 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
 	<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/buttons/2.2.2/js/dataTables.buttons.min.js"></script>
 	<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/plug-ins/1.13.6/dataRender/percentageBars.js"></script>
 	<script src="js/app.js"></script>
-	<script src="js/index.js"></script>
+	<script src="js/stockxmarca.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/chart.js@3.0.0/dist/chart.min.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
 	<script>
-$('#miComboBox').on('change',function(){
-		var optionText = $("#miComboBox option:selected").text().valueOf();
-		$.ajax({
-        url: 'Stock_por_marca.php',
-        type: 'GET',
-		data: {
-            'mn': optionText
-        },
-        dataType: 'text',
-        success: function(data) {
-            document.getElementById("marcanom").innerHTML = "Marca: "+optionText;
-        },
-        error: function() {
-        }
-    });
-    });
+	const currentDateTimeElement = document.getElementById("fecreport");
+	const currentDate = new Date();
+	const dateTimeString = currentDate.toLocaleString();
+	currentDateTimeElement.innerHTML = `Fecha de Reporte: ${dateTimeString}`;
+	
 	
 	</script>
 </body>
